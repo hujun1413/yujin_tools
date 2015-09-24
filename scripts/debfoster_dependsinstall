@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+    echo "Usage : $0 <package_name>"
+    exit 127
+fi
+
+set -x
+apt-get -s install `debfoster --show-depends $1 | grep "^ " | tr "\n" " "`
+set +x

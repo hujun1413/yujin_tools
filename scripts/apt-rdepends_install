@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $# -ne 1 ]; then
+    echo "Usage : $0 <package_name>"
+    exit 127
+fi
+
 #KNOWN BUG : virtual packages such as <debconf-2.0>
 
-apt-get install `apt-rdepends chromium-browser | grep -v "^ " | tr "\n" " "`
+apt-get install `apt-rdepends $1 | grep -v "^ " | tr "\n" " "`

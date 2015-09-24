@@ -2,12 +2,14 @@
 
 if [ $# -ne 1 ]; then
     echo "Usage : $0 <package_name>"
+    exit 127
 fi
 
 PKG_LIST=( $1 )
 PKG_DONE=0
 
 #KNOWN BUG : virtual packages such as <debconf-2.0>
+#REMARQ : Maybe doesnt get PreDepends ?
 
 #set -x
 # Array reference : http://www.thegeekstuff.com/2010/06/bash-array-tutorial/
