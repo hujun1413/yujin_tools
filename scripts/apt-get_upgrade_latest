@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+    echo "Usage : $0 <package_name>"
+fi
+
+PKG_LIST=( $1 )
+PKG_DONE=0
+
+#KNOWN BUG : virtual packages such as <debconf-2.0>
+
+#set -x
+# Array reference : http://www.thegeekstuff.com/2010/06/bash-array-tutorial/
+# No multidimensional arrays in bash
+
+while [ $PKG_DONE -lt ${#PKG_LIST[@]} ]
+do
+    PKG_LEN=${#PKG_LIST[@]}
+    #echo "Checking dependencies for packages ${PKG_LIST[@]:$PKG_DONE:$PKG_LEN}"
+    for pkg in "${PKG_LIST[@]:$PKG_DONE}"; do
+        # getting dependencies for $pkg only if it doesnt already appear before ( and has already been evaluated )
+        #set -x
+        pkg_cnt=$(echo "${PKG_LIST[@]:0:$PKG_DONE}" | tr ' ' '\n' | sort | uniq -c | awk -v pkg="$pkg" '$2 == pkg {print $1}' )
+        #set +x
+        if [ ${pkg_cnt:-0} -lt 1 ]; then
+            #list dependencies
+            DEPS=$(apt-cache depends $pkg | awk '$1 == "Depends:" {print $2}' | tr "\n" " ")
+            #echo "$pkg => $DEPS"
+            PKG_LIST+=("$DEPS")
+            #echo "Result : $PKG_LIST" 
+        else
+            #echo "$pkg => skipped."
+            : #noop
+        fi
+    done
+    #forcing unicity but only on non-already evaluated packages
+    #echo "Non unictiy on ${PKG_LIST[@]:0:$PKG_LEN}"
+    #echo " Unicity on ${PKG_LIST[@]:$PKG_LEN}"
+#set -x
+    DONE_PKG_LIST=("${PKG_LIST[@]:0:$PKG_LEN}")
+    if [ $PKG_LEN -lt ${#PKG_LIST[@]} ]; then
+        PKG_LIST=( ${DONE_PKG_LIST[@]} $(echo "${PKG_LIST[@]:$PKG_LEN}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+    else # last iteration
+        PKG_LIST=( $(echo "${DONE_PKG_LIST[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ') )
+    fi
+#set +x
+    PKG_DONE=$PKG_LEN
+
+    #echo "PreResult :" 
+    #echo ${PKG_LIST[@]}
+
+done
+
+#set +x
+apt-get install ${PKG_LIST[@]}

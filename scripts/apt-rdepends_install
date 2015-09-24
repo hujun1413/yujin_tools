@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#KNOWN BUG : virtual packages such as <debconf-2.0>
+
+apt-get install `apt-rdepends chromium-browser | grep -v "^ " | tr "\n" " "`
