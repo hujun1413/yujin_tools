@@ -50,6 +50,7 @@ def _parse_args(args=sys.argv[1:]):
     group.add_argument('--install-rosdeps', action='store_true', help='Install all rosdeps for the workspace sources and track set by `yujin_tools_settings --get-default-track` [false]')
     group.add_argument('-t', '--tests', action='store_true', help='Make tests [false]')
     group.add_argument('-r', '--run-tests', action='store_true', help='Run tests (does not build them) [false]')
+    parser.add_argument('--strip', action='store_true', help='Strips binaries, only valid with --install')
     parser.add_argument('--no-color', action='store_true', help='Disables colored ouput')
     parser.add_argument('--target', default=None, help='Build against a particular target only')
     parser.add_argument('--pkg', help='Invoke "make" on a specific package only')
@@ -143,7 +144,10 @@ def install_rosdeps(base_path, source_path, rosdistro, no_color):
     cmd = ['rosdep', 'install', '-r']
     underlays = config_cache.get_underlays_list_from_config_cmake(base_path)
     for underlay in underlays:
-        cmd += ['--from-paths', underlay]
+        if os.path.isdir(underlay):
+            cmd += ['--from-paths', underlay]
+        else:
+	    print("Not adding underlay '%s' to the rosdep search path [not found]" % underlay)
     cmd += ['--from-paths', source_path, '--ignore-src', '--rosdistro', rosdistro, '-y']
     env = os.environ.copy()
     try:
@@ -275,7 +279,7 @@ def make_main():
         if args.target:
             cmd = ['make', args.target]
         elif args.install:
-            cmd = ['make', 'install']
+            cmd = ['make', 'install/strip'] if args.strip else ['make', 'install']
         elif args.tests:
             cmd = ['make', 'tests']
         elif args.run_tests:

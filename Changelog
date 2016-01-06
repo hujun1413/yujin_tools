@@ -1,3 +1,34 @@
+0.3.8
+ - groot_sync fix for gopher_meta -> gopher_robot
+ - dont bork when yujin_make installs rosdeps for non existant underlays
+0.3.7
+ - groot_build fix for the new workspaces
+0.3.6
+ - groot_sources gets bootstrap and desktop, loses rocon
+0.3.5
+ - yujin_make and yujin_make_isolated gets a --strip option
+0.3.1
+ - yujin package release script
+0.3.0
+ - shiny new release
+0.2.103
+ - eliminate old binary scripts
+0.2.102
+ - add the groot_arm_binaries script
+ - shift groot_binaries rsync location to yujin/amd64/indigo
+0.2.101
+ - update latest cubie toolchain now using glibc 2.19
+0.2.100
+ - optional internal/external server for groot binaries.
+0.2.98
+ - source environment before install rosdeps on groot_binaries.
+0.2.97
+ - catch the ignore profile with groot_sync too.
+00.2.96
+ - groot sources update with --merge.
+0.2.95
+ - switch groot binaries to yujinrobot, its faster for external access and not so big for internal.
+ - compression for groot binaries syncs.
 0.2.94
  - added yujin_binaries as an alias (changing over) for groot_binaries.
 0.2.93
